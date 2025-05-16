@@ -51,6 +51,7 @@ export default function Home() {
               >
                 <h3>{prototype.title}</h3>
                 <p>{prototype.description}</p>
+                <div className={styles.statueImage}></div>
               </Link>
             ))}
           </section>

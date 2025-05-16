@@ -176,6 +176,97 @@
   height: 15px;
   background: 
     linear-gradient(135deg, transparent 0%, transparent 50%, #999 50%, #999 100%);
+  transition: all 0.3s ease;
+}
+
+.card:hover::after {
+  /* Keep the triangle in the corner when hovered */
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  background: 
+    linear-gradient(135deg, transparent 0%, transparent 50%, #999 50%, #999 100%);
+  transition: all 0.3s ease;
+}
+
+/* Add a glitch animation for the statue image */
+@keyframes statueGlitch {
+  0% {
+    transform: scale(1) translate(0, 0);
+    filter: none;
+  }
+  10% {
+    transform: scale(1.01) translate(-0.7px, 0.4px);
+    filter: hue-rotate(90deg) brightness(1.08);
+  }
+  20% {
+    transform: scale(0.99) translate(0.7px, -0.7px);
+    filter: hue-rotate(180deg) contrast(1.15);
+  }
+  30% {
+    transform: scale(1.01) translate(-0.4px, 0.4px);
+    filter: hue-rotate(270deg) brightness(0.92);
+  }
+  40% {
+    transform: scale(0.98) translate(0.4px, 0);
+    filter: hue-rotate(200deg) brightness(1.08);
+  }
+  50% {
+    transform: scale(1) translate(-0.3px, 0);
+    filter: hue-rotate(120deg) contrast(1.07);
+  }
+  60% {
+    transform: scale(1) translate(0.2px, 0.2px);
+    filter: hue-rotate(60deg) brightness(1.03);
+  }
+  70% {
+    transform: scale(1) translate(0.2px, 0.2px);
+    filter: hue-rotate(30deg) brightness(1.03);
+  }
+  80% {
+    transform: scale(1) translate(0.1px, 0.1px);
+    filter: hue-rotate(15deg) brightness(1.02);
+  }
+  88% {
+    transform: scale(1) translate(0.05px, 0.05px);
+    filter: hue-rotate(10deg) brightness(1.01);
+  }
+  94% {
+    transform: scale(1) translate(0.02px, 0.02px);
+    filter: hue-rotate(5deg) brightness(1.01);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+    filter: none;
+  }
+}
+
+/* Add statue image on hover with a new element */
+.card .statueImage {
+  display: block;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 65px;
+  height: 65px;
+  background-image: url('/playground/statue.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  z-index: 1;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.card:hover .statueImage {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+  animation: statueGlitch 0.9s ease-in-out;
 }
 
 .card:hover {
