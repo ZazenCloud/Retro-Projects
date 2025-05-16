@@ -79,7 +79,7 @@ export default function Home() {
   // Function to maximize window or toggle fullscreen
   const handleMaximizeWindow = () => {
     if (isMinimized) {
-      // If minimized, restore window
+      // If minimized, restore window but maintain fullscreen state
       setIsMinimized(false);
     } else {
       // If not minimized, toggle fullscreen
@@ -117,58 +117,57 @@ export default function Home() {
     }
   };
 
-  // If minimized, show a minimal representation of the window
-  if (isMinimized) {
-    return (
-      <div className={styles.minimizedWindow}>
-        <div className={styles.windowControls}>
-          <span onClick={handleCloseWindow}></span>
-          <span onClick={handleMinimizeWindow}></span>
-          <span onClick={handleMaximizeWindow}></span>
-        </div>
-        <span className={styles.minimizedText}>Zen's Projects</span>
-      </div>
-    );
-  }
-
   return (
     <div ref={containerRef} className={`${styles.container} ${retro.className} ${isFullScreen ? styles.fullscreen : ''}`}>
-      <div className={styles.y2kElements}>
-        <div className={styles.palmTree}></div>
-        <div className={styles.sunset}></div>
-      </div>
-      
-      <div className={styles.contentWrapper}>
-        <header className={styles.header}>
+      {isMinimized ? (
+        <div className={styles.minimizedWindow}>
           <div className={styles.windowControls}>
             <span onClick={handleCloseWindow}></span>
             <span onClick={handleMinimizeWindow}></span>
             <span onClick={handleMaximizeWindow}></span>
           </div>
-          <h1 className={pixelFont.className}>Zen's Projects</h1>
-        </header>
+          <span className={styles.minimizedText}>Zen's Projects</span>
+        </div>
+      ) : (
+        <>
+          <div className={styles.y2kElements}>
+            <div className={styles.palmTree}></div>
+            <div className={styles.sunset}></div>
+          </div>
+          
+          <div className={styles.contentWrapper}>
+            <header className={styles.header}>
+              <div className={styles.windowControls}>
+                <span onClick={handleCloseWindow}></span>
+                <span onClick={handleMinimizeWindow}></span>
+                <span onClick={handleMaximizeWindow}></span>
+              </div>
+              <h1 className={pixelFont.className}>Zen's Projects</h1>
+            </header>
 
-        <main>
-          <section className={styles.grid}>
-            {/* Goes through the prototypes list (array) to create cards */}
-            {prototypes.map((prototype, index) => (
-              <Link 
-                key={index}
-                href={prototype.path} 
-                className={styles.card}
-              >
-                <h3>{prototype.title}</h3>
-                <p>{prototype.description}</p>
-                <div className={styles.statueImage}></div>
-              </Link>
-            ))}
-          </section>
-        </main>
-        
-        <footer className={styles.footer}>
-          <p>© {new Date().getFullYear()} AESTHETIC COMPUTING</p>
-        </footer>
-      </div>
+            <main>
+              <section className={styles.grid}>
+                {/* Goes through the prototypes list (array) to create cards */}
+                {prototypes.map((prototype, index) => (
+                  <Link 
+                    key={index}
+                    href={prototype.path} 
+                    className={styles.card}
+                  >
+                    <h3>{prototype.title}</h3>
+                    <p>{prototype.description}</p>
+                    <div className={styles.statueImage}></div>
+                  </Link>
+                ))}
+              </section>
+            </main>
+            
+            <footer className={styles.footer}>
+              <p>© {new Date().getFullYear()} AESTHETIC COMPUTING</p>
+            </footer>
+          </div>
+        </>
+      )}
     </div>
   );
 }
