@@ -429,6 +429,14 @@
   padding-bottom: 20px; /* Add some padding at the bottom */
 }
 
+.horizontalWindowsContainer .windowSlot {
+  margin-right: 20px; /* Ensure consistent margin between all slots */
+}
+
+.horizontalWindowsContainer .windowSlot:last-child {
+  margin-right: 0; /* Remove margin from last window */
+}
+
 .windowSlot { /* Base class for the wrapper divs */
   position: relative; /* Crucial for absolute positioning of the draggable window inside */
   flex-shrink: 0; /* Prevent slots from shrinking if container is too narrow */
@@ -449,15 +457,28 @@
   height: 200px; /* Approximate height for SettingsWindow */
 }
 
-/* Add specific margins to slots to space them out */
-.horizontalWindowsContainer > .windowSlot:not(:last-child) {
-  margin-right: 20px;
+/* Desktop layout - outside media query */
+/* Original desktop order */
+.settingsSlot {
+  order: 3; /* Wave Types last in desktop */
+  margin-right: 0 !important; /* No margin as it's visually last */
 }
 
+.waveformSlot {
+  order: 1; /* Waveform first in desktop */
+  margin-right: 20px !important; /* Margin between windows */
+}
+
+.playSongsSlot {
+  order: 2; /* Songs second in desktop */
+  margin-right: 20px !important; /* Margin between windows */
+}
+
+/* Remove any conflicting margins */
 .waveformWindowStyling,
 .playSongsWindow,
 .settingsWindow {
-    margin: 0 !important;
+  margin: 0 !important;
 }
 
 /* Navigation and Help Buttons */
@@ -555,4 +576,272 @@
 
 .helpContent li:last-child {
   margin-bottom: 0;
+}
+
+/* Octave Arrow Styling (Default: Hidden for Desktop) */
+.octaveArrow {
+  display: none; /* Hide by default (desktop) */
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 8px;
+  user-select: none;
+  color: #000;
+  font-weight: bold;
+}
+
+.octaveArrowLeft {
+  position: absolute;
+  left: 8px; /* Align with header padding, symmetrical to right arrow */
+}
+
+.octaveArrowRight {
+  position: absolute;
+  right: 8px;
+}
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .macWindow {
+    position: static !important;
+    transform: none !important;
+    margin: 10px auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .pianoWindow {
+    width: 100% !important;
+    margin-top: 60px !important;
+    margin-bottom: 5px !important;
+  }
+
+  .horizontalWindowsContainer {
+    flex-direction: column;
+    margin-top: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+  }
+
+  .windowSlot {
+    width: 100% !important;
+    margin-right: 0 !important;
+    margin-bottom: 5px;
+    height: auto !important; /* Override any fixed heights */
+  }
+
+  /* Mobile-specific order */
+  .settingsSlot {
+    order: 1 !important;
+    margin-right: 0 !important;
+    margin-bottom: 5px !important;
+  }
+
+  .waveformSlot {
+    order: 2 !important;
+    margin-right: 0 !important;
+    margin-bottom: 5px !important;
+  }
+
+  .playSongsSlot {
+    order: 3 !important;
+    margin-right: 0 !important;
+    margin-bottom: 5px !important;
+  }
+
+  /* Mobile-optimized keyboard */
+  .keyboard {
+    overflow-x: hidden !important;
+    justify-content: center;
+    padding: 10px 5px; /* Small padding around the keys */
+    height: 160px !important;
+    min-height: 160px !important;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: manipulation;
+    position: relative; /* For absolute positioned black keys */
+    background-color: #bbb; /* Background for the keyboard area */
+  }
+
+  .octave {
+    transform: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    position: relative; /* Each octave is a positioning context for its black keys */
+  }
+
+  /* This rule is crucial for connecting the visual blocks of octaves */
+  .octave + .octave {
+    margin-left: -1px; /* Pulls the second octave left to overlap/join borders */
+  }
+
+  .whiteKey {
+    width: 34px; /* Adjusted width - a bit larger */
+    height: 140px;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    /* Define borders explicitly for better control at seams */
+    border-top: 1px solid #888;
+    border-right: 1px solid #888;
+    border-bottom: 1px solid #888;
+    border-left: none; /* No left border by default */
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: manipulation;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Add left border to the first white key of EACH octave */
+  .octave .whiteKey:first-child {
+    border-left: 1px solid #888;
+  }
+
+  .blackKey {
+    width: 20px; /* Adjusted width - a bit larger */
+    height: 85px;
+    background-color: #111;
+    border: 1px solid #000;
+    border-radius: 0 0 2px 2px;
+    position: absolute;
+    z-index: 2;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: manipulation;
+  }
+
+  /* Black key positions for W=34px, BW=20px. BW/2 = 10px */
+  .blackKey[data-note="C#3"],
+  .blackKey[data-note="C#4"] {
+    left: 24px; /* 1*34 - 10 */
+  }
+
+  .blackKey[data-note="D#3"],
+  .blackKey[data-note="D#4"] {
+    left: 58px; /* 2*34 - 10 */
+  }
+
+  .blackKey[data-note="F#3"] {
+    left: 126px; /* 4*34 - 10 (F is 4th white key in standard octave) */
+  }
+
+  .blackKey[data-note="G#3"] {
+    left: 160px; /* 5*34 - 10 */
+  }
+
+  .blackKey[data-note="A#3"] {
+    left: 194px; /* 6*34 - 10 */
+  }
+
+  .noteLabel,
+  .keyboardKeyLabel {
+    font-size: 12px; /* Slightly larger font for slightly larger keys */
+    color: #555;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
+    text-align: center;
+  }
+
+  .whiteKey .noteLabel {
+    padding-bottom: 6px; /* Adjust for smaller keys */
+  }
+  
+  .blackKey .keyboardKeyLabel {
+    color: #ddd;
+    position: absolute;
+    bottom: 6px; /* Adjust for smaller keys */
+    left: 0;
+    right: 0;
+  }
+
+  /* Add touch-friendly hover states */
+  .whiteKey:active {
+    background-color: #e0e0ff;
+    box-shadow: inset 0 0 10px rgba(0,0,150,0.2);
+  }
+
+  .blackKey:active {
+    background-color: #444;
+    box-shadow: inset 0 0 5px rgba(255,255,255,0.3);
+  }
+
+  /* Help window adjustments for mobile */
+  .helpWindow {
+    width: calc(100% - 40px);
+    max-width: none;
+    right: 10px;
+  }
+
+  /* Window-specific mobile adjustments */
+  .waveformWindowStyling {
+    height: auto !important;
+    margin-bottom: 5px !important;
+  }
+
+  .playSongsWindow {
+    margin-bottom: 5px !important;
+  }
+
+  .settingsWindow {
+    margin-bottom: 5px !important;
+  }
+
+  /* Navigation and help buttons adjustments */
+  .navigationButton,
+  .helpButton {
+    top: 10px;
+    z-index: 1000;
+  }
+
+  /* Adjust Wave Types window spacing */
+  .settingsWindow .windowContent {
+    padding: 5px 12px !important; /* Reduced top/bottom padding */
+  }
+
+  .settingsWindow .controlGroup {
+    padding-top: 0;
+    margin-bottom: 0; /* Remove bottom margin */
+  }
+
+  .settingsWindow .radioOption:last-child {
+    margin-bottom: 0; /* Ensure last radio option has no bottom margin */
+  }
+
+  .horizontalWindowsContainer > .windowSlot {
+    width: 100% !important;
+    margin-right: 0 !important;
+    margin-bottom: 5px !important;
+  }
+
+  .octaveArrow {
+    display: block !important; /* Show arrows on mobile, use !important to ensure override */
+  }
 }

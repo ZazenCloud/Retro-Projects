@@ -512,6 +512,23 @@ const PlaySongsWindow = ({
   );
 };
 
+// Add this hook after the other imports
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+};
+
 export default function DigitalPiano() {
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [waveform, setWaveform] = useState<OscillatorType>('sine');
@@ -521,6 +538,7 @@ export default function DigitalPiano() {
   const [selectedSong, setSelectedSong] = useState<string>(AVAILABLE_SONGS_DATA[0]?.name || '');
   const [isSongCurrentlyPlaying, setIsSongCurrentlyPlaying] = useState(false);
   const [octaveOffset, setOctaveOffset] = useState<number>(0);
+  const isMobile = useIsMobile();
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -740,6 +758,14 @@ export default function DigitalPiano() {
     stopAllSounds();
   }, [stopAllSounds, setIsSongCurrentlyPlaying]);
 
+  const decreaseOctave = useCallback(() => {
+    setOctaveOffset(prev => Math.max(MIN_OCTAVE_OFFSET, prev - 1));
+  }, []);
+
+  const increaseOctave = useCallback(() => {
+    setOctaveOffset(prev => Math.min(MAX_OCTAVE_OFFSET, prev + 1));
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -791,9 +817,9 @@ export default function DigitalPiano() {
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault();
         if (e.key === 'ArrowUp') {
-          setOctaveOffset(prev => Math.min(MAX_OCTAVE_OFFSET, prev + 1));
+          increaseOctave();
         } else if (e.key === 'ArrowDown') {
-          setOctaveOffset(prev => Math.max(MIN_OCTAVE_OFFSET, prev - 1));
+          decreaseOctave();
         }
         return;
       }
@@ -852,13 +878,14 @@ export default function DigitalPiano() {
         </div>
       </div>
 
+      {/* Piano Window - Always first */}
       <div 
         ref={pianoRef}
         className={`${styles.macWindow} ${styles.pianoWindow}`}
         style={{
-          position: 'absolute',
-          left: pianoPosition.x + 'px',
-          top: pianoPosition.y + 'px',
+          position: isMobile ? 'static' : 'absolute',
+          left: !isMobile ? pianoPosition.x + 'px' : undefined,
+          top: !isMobile ? pianoPosition.y + 'px' : undefined,
           transform: 'none',
           cursor: isPianoDragging ? 'grabbing' : 'default',
         }}
@@ -873,7 +900,19 @@ export default function DigitalPiano() {
             <span className={styles.minimizeButton}></span>
             <span className={styles.zoomButton}></span>
           </div>
+          <span 
+            className={`${styles.octaveArrow} ${styles.octaveArrowLeft}`}
+            onClick={decreaseOctave}
+          >
+            ←
+          </span>
           <div className={styles.windowTitle}>Piano</div>
+          <span 
+            className={`${styles.octaveArrow} ${styles.octaveArrowRight}`}
+            onClick={increaseOctave}
+          >
+            →
+          </span>
         </div>
         
         <div className={styles.windowContent}>
@@ -966,16 +1005,30 @@ export default function DigitalPiano() {
         </div>
       </div>
 
-      {/* New wrapper for horizontal windows */}
+      {/* Other Windows Container */}
       <div className={styles.horizontalWindowsContainer}>
-        <div className={`${styles.windowSlot} ${styles.waveformSlot}`}> {/* Slot for WaveformWindow with specific class*/}
+        {/* Wave Types */}
+        <div className={`${styles.windowSlot} ${styles.settingsSlot}`}>
+          <SettingsWindow 
+            isOpen={isSettingsOpen} 
+            onClose={() => setIsSettingsOpen(false)} 
+            waveform={waveform} 
+            setWaveform={setWaveform}
+            waveformOptions={waveformOptions}
+          />
+        </div>
+
+        {/* Waveform */}
+        <div className={`${styles.windowSlot} ${styles.waveformSlot}`}>
           <WaveformWindow 
             isOpen={isWaveformWindowOpen}
             analyserNode={analyserRef.current}
             animationFrameRef={animationFrameRef}
           />
         </div>
-        <div className={`${styles.windowSlot} ${styles.playSongsSlot}`}> {/* Slot for PlaySongsWindow with specific class*/}
+
+        {/* Songs */}
+        <div className={`${styles.windowSlot} ${styles.playSongsSlot}`}>
           <PlaySongsWindow
             isOpen={isPlaySongsWindowOpen}
             onClose={() => setIsPlaySongsWindowOpen(false)}
@@ -985,15 +1038,6 @@ export default function DigitalPiano() {
             onStop={handleStopSong}
             availableSongs={AVAILABLE_SONGS_DATA.map(s => s.name)}
             isSongPlaying={isSongCurrentlyPlaying}
-          />
-        </div>
-        <div className={`${styles.windowSlot} ${styles.settingsSlot}`}> {/* Slot for SettingsWindow with specific class*/}
-          <SettingsWindow 
-            isOpen={isSettingsOpen} 
-            onClose={() => setIsSettingsOpen(false)} 
-            waveform={waveform} 
-            setWaveform={setWaveform}
-            waveformOptions={waveformOptions}
           />
         </div>
       </div>
