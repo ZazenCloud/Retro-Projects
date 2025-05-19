@@ -138,10 +138,6 @@
   margin-bottom: 12px;
 }
 
-.playSongsWindow .controlGroup:first-child {
-  /* margin-bottom: 15px; */
-}
-
 .playSongsWindow .playControls {
   margin-top: 0;
   /* padding-top: 5px; */

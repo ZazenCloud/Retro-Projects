@@ -58,6 +58,16 @@ export default function Home() {
       description: 'A classic MacOS-styled digital piano you can play with keyboard or mouse',
       path: '/prototypes/digital-piano'
     },
+    {
+      title: 'Typography Experiments',
+      description: 'Explore creative typography effects with CSS and SVG',
+      path: '/prototypes/typography-experiments'
+    },
+    {
+      title: 'Noted OS',
+      description: 'A retro-styled note-taking app with draggable windows and drawing tools',
+      path: '/prototypes/noted-os'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',
