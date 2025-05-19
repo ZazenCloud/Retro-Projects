@@ -1,0 +1,558 @@
+.container {
+  width: 100%;
+  min-width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  padding: 2rem;
+  margin: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #eee;
+  font-family: 'Courier', monospace;
+  position: relative;
+}
+
+/* Classic MacOS window styling */
+.macWindow {
+  background-color: #d8d8d8;
+  border: 1px solid #000;
+  border-radius: 4px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.pianoWindow {
+  width: 783px;
+  min-height: auto;
+  z-index: 1;
+}
+
+.pianoWindow .windowTitle {
+  padding-right: 0; /* Center title */
+  text-align: center;
+}
+
+.settingsWindow {
+  width: 150px;
+  z-index: 10;
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+  background-color: #d8d8d8;
+}
+
+.windowHeader {
+  background: #fff;
+  height: 26px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px solid #888;
+  flex-shrink: 0;
+}
+
+.windowControls {
+  display: none;
+}
+
+.closeButton, .minimizeButton, .zoomButton {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.closeButton {
+  background-color: #ff5f57;
+}
+
+.minimizeButton {
+  background-color: #ffbd2e;
+}
+
+.zoomButton {
+  background-color: #28c940;
+}
+
+.windowTitle {
+  flex-grow: 1;
+  text-align: center;
+  font-weight: normal;
+  font-size: 14px;
+  color: #000;
+  padding-right: 30px;
+  pointer-events: none;
+  font-family: 'Courier', monospace;
+}
+
+.windowContent {
+  padding: 0;
+  background-color: #e6e6e6;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.playSongsWindow .windowContent {
+  padding: 10px 12px;
+}
+
+.settingsWindow .windowContent {
+  padding: 10px 12px; /* Add consistent padding */
+  justify-content: flex-start; /* Align content to the top */
+}
+
+/* Remove any remaining mainControls styles as they're no longer needed */
+.mainControls {
+  display: none;
+}
+
+.tuneButton {
+  display: none;
+}
+
+/* Controls (generic, used in settings window) */
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  padding-top: 10px;
+}
+
+/* Specific adjustments for control groups within SettingsWindow */
+.settingsWindow .controlGroup {
+  padding-top: 0; /* Remove top padding as windowContent now has it */
+  margin-bottom: 0; /* Remove bottom margin, spacing handled by radioOption or content padding */
+}
+
+.playSongsWindow .controlGroup {
+  padding-top: 0;
+  margin-bottom: 12px;
+}
+
+.playSongsWindow .controlGroup:first-child {
+  /* margin-bottom: 15px; */
+}
+
+.playSongsWindow .playControls {
+  margin-top: 0;
+  /* padding-top: 5px; */
+}
+
+.controlGroup label {
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: normal;
+  color: #333;
+}
+
+.select {
+  padding: 4px 6px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 12px;
+  font-family: inherit;
+  width: 100%;
+}
+
+/* Piano keyboard */
+.keyboard {
+  display: flex;
+  justify-content: center;
+  background-color: #bbb;
+  padding: 10px;
+  border: none;
+  overflow-x: hidden;
+  flex-grow: 1;
+}
+
+.octave {
+  display: flex;
+  position: relative;
+}
+
+.whiteKey {
+  width: 75px;
+  height: 270px;
+  background-color: #fff;
+  border: 1px solid #888;
+  border-radius: 0 0 3px 3px;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 12px;
+  z-index: 1;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+  margin-right: -1px;
+}
+
+.blackKey {
+  width: 42px;
+  height: 165px;
+  background-color: #111;
+  position: absolute;
+  border: 1px solid #000;
+  border-radius: 0 0 3px 3px;
+  z-index: 2;
+  cursor: pointer;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+}
+
+.whiteKey.active {
+  background-color: #e0e0ff;
+  box-shadow: inset 0 0 5px rgba(0,0,150,0.4);
+}
+
+.blackKey.active {
+  background-color: #555;
+  box-shadow: inset 0 0 3px rgba(255,255,255,0.6);
+}
+
+.noteLabel {
+  font-size: 16px;
+  color: #555;
+  pointer-events: none;
+  font-family: 'Courier', monospace;
+  text-transform: lowercase;
+}
+
+/* Style for keyboard key labels on black keys */
+.keyboardKeyLabel {
+  font-size: 16px;
+  color: #ddd;
+  pointer-events: none;
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  text-transform: lowercase;
+  font-family: 'Courier', monospace;
+}
+
+/* Styles for the Settings Window Radio Buttons */
+.controlLabel { 
+  display: block;
+  margin-bottom: 6px;
+  margin-top: 14px;
+  font-size: 19px;
+  font-weight: normal;
+  color: #333;
+  font-family: 'Courier', monospace;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-left: 10px;
+}
+
+.settingsWindow .radioOption:last-child {
+  margin-bottom: 0; /* Remove margin from the last radio option */
+}
+
+.radioButton {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #000;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+  position: relative;
+  margin-right: 10px;
+  outline: none; 
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.radioButton:checked {
+  background-color: #fff;
+  border-width: 1px;
+}
+
+.radioButton:checked::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.radioButton:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5); 
+}
+
+.radioButton:hover {
+  border-color: #333;
+}
+
+.radioLabel {
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+  font-family: 'Courier', monospace;
+  transform: translateY(3px);
+  display: inline-block;
+}
+
+/* Specific positioning for each black key */
+.blackKey[data-note="C#3"] {
+  left: 54px;
+}
+
+.blackKey[data-note="D#3"] {
+  left: 129px;
+}
+
+.blackKey[data-note="F#3"] {
+  left: 275px;
+}
+
+.blackKey[data-note="G#3"] {
+  left: 349px;
+}
+
+.blackKey[data-note="A#3"] {
+  left: 423px;
+}
+
+.blackKey[data-note="C#4"] {
+  left: 54px;
+}
+
+.blackKey[data-note="D#4"] {
+  left: 129px;
+}
+
+/* Remove the transform since we're using exact positioning */
+.blackKey[data-note$="#3"],
+.blackKey[data-note$="#4"] {
+  transform: none;
+}
+
+.settingsWindow .windowTitle {
+  padding-right: 0;
+  text-align: center;
+}
+
+/* Styles for the new Play Songs Window */
+.playSongsWindow {
+  width: 280px;
+  height: auto;
+  min-width: 250px;
+}
+
+.songLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #000;
+}
+
+.songDropdown {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #808080;
+  background-color: #fff;
+  font-family: 'Chicago', 'Charcoal', 'Arial', sans-serif; /* Match OS font */
+  font-size: 13px;
+  border-radius: 0; /* Sharp corners */
+  appearance: none; /* Remove default system styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%225%22%20viewBox%3D%220%200%2010%205%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M0%200L5%205L10%200H0Z%22%20fill%3D%22%23000%22/%3E%3C/svg%3E'); /* Custom arrow */
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 25px; /* Space for the arrow */
+  box-shadow: inset 1px 1px 0px #fff, inset -1px -1px 0px #808080, 1px 1px 0px #000;
+}
+
+.playControls {
+  display: flex;
+  justify-content: space-between; /* Space out Play and Stop buttons */
+  margin-top: 10px;
+}
+
+.playControls .macButton {
+  flex-grow: 1; /* Make buttons take equal width */
+}
+
+.playControls .macButton:not(:last-child) {
+  margin-right: 8px; /* Add some space between buttons */
+}
+
+.waveformWindowStyling {
+  width: 350px;
+  height: auto;
+}
+
+.waveformWindowStyling .windowTitle {
+  padding-right: 0; /* Center title */
+  text-align: center;
+}
+
+.playSongsWindow .windowTitle {
+  padding-right: 0; /* Center title */
+  text-align: center;
+}
+
+.horizontalWindowsContainer { /* Container for horizontal layout */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start; /* Align slots to the top */
+  width: 100%;
+  margin-top: 510px; /* Calculated: 30px (piano top) + 316px (piano height) + 20px (gap) */
+  padding-bottom: 20px; /* Add some padding at the bottom */
+}
+
+.windowSlot { /* Base class for the wrapper divs */
+  position: relative; /* Crucial for absolute positioning of the draggable window inside */
+  flex-shrink: 0; /* Prevent slots from shrinking if container is too narrow */
+}
+
+.waveformSlot {
+  width: 350px; /* Matches .waveformWindowStyling width */
+  height: 250px; /* Approximate height for WaveformWindow */
+}
+
+.playSongsSlot {
+  width: 280px; /* Matches .playSongsWindow width */
+  height: 180px; /* Approximate height for PlaySongsWindow */
+}
+
+.settingsSlot {
+  width: 150px; /* Matches .settingsWindow width */
+  height: 200px; /* Approximate height for SettingsWindow */
+}
+
+/* Add specific margins to slots to space them out */
+.horizontalWindowsContainer > .windowSlot:not(:last-child) {
+  margin-right: 20px;
+}
+
+.waveformWindowStyling,
+.playSongsWindow,
+.settingsWindow {
+    margin: 0 !important;
+}
+
+/* Navigation and Help Buttons */
+.navigationButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background-color: #d8d8d8;
+  border: 1px solid #000;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  font-family: 'Courier', monospace;
+  transition: background-color 0.2s;
+  color: #000;
+  text-decoration: none;
+}
+
+.navigationButton:hover {
+  background-color: #c8c8c8;
+}
+
+.helpButton {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background-color: #d8d8d8;
+  border: 1px solid #000;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  font-family: 'Courier', monospace;
+  transition: background-color 0.2s;
+}
+
+.helpButton:hover {
+  background-color: #c8c8c8;
+}
+
+.helpWindow {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  width: 300px;
+  background-color: #d8d8d8;
+  border: 1px solid #000;
+  border-radius: 4px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 99;
+}
+
+.helpButton:hover + .helpWindow {
+  opacity: 1;
+  visibility: visible;
+}
+
+.helpContent {
+  padding: 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #000;
+}
+
+.helpContent h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.helpContent ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.helpContent li {
+  margin-bottom: 5px;
+}
+
+.helpContent li:last-child {
+  margin-bottom: 0;
+}
