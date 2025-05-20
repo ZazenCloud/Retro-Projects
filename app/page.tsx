@@ -64,9 +64,9 @@ export default function Home() {
       path: '/prototypes/typography-experiments'
     },
     {
-      title: 'Noted OS',
-      description: 'A retro-styled note-taking app with draggable windows and drawing tools',
-      path: '/prototypes/noted-os'
+      title: 'NoteOS',
+      description: 'A note-taking app with cyberpunk vibes',
+      path: '/prototypes/note-os'
     },
     // Add your new prototypes here like this:
     // {
