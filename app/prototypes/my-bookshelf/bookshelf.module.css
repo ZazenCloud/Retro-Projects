@@ -1,0 +1,334 @@
+.container {
+  font-family: 'Instrument Sans', sans-serif;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  position: relative;
+  background: none;
+  z-index: 1;
+}
+
+.animatedBg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(-45deg, #e7e7e7, #d9d9d9, #cbcbcb, #b0b0b0);
+  background-size: 400% 400%;
+  animation: gradientFlow 15s ease infinite;
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Add a subtle overlay for content clarity */
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4rem;
+  position: relative;
+}
+
+.title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.bookCount {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #666;
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.bookCard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  gap: 1.25rem;
+  background: rgba(255,255,255,0.25);
+  border-radius: 18px;
+  padding: 1.5rem 1.25rem 1.75rem 1.25rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+  backdrop-filter: blur(12px) saturate(1.2);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.bookCard:hover {
+  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 16px 32px 0 rgba(44, 62, 80, 0.18);
+  border: 1.5px solid #2c3e50;
+}
+
+.genreBar {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 6px;
+  border-radius: 18px 18px 0 0;
+  background: linear-gradient(90deg, #2c3e50, #95a5a6);
+  opacity: 0.7;
+}
+
+.coverContainer {
+  aspect-ratio: 3/4;
+  width: 100%;
+  background-color: #f3f4f6;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(160, 132, 232, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.coverContainer:hover .coverImage {
+  transform: scale(1.06);
+}
+
+.noCover {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 2.2rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #95a5a6 100%);
+  border-radius: 10px;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+.bookTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.3;
+  margin: 0;
+  min-height: 3.2em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  letter-spacing: -0.01em;
+}
+
+.bookAuthor {
+  font-size: 1rem;
+  color: #6d6d6d;
+  margin: 0;
+  line-height: 1.2;
+  min-height: 1.2em;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 500;
+  font-family: 'Instrument Sans', sans-serif;
+}
+
+.rating {
+  color: #a084e8;
+  font-size: 1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  margin: 0;
+  letter-spacing: 0.18em;
+}
+
+.stars {
+  letter-spacing: 0.18rem;
+  color: #000;
+  font-size: 1.2rem;
+}
+
+.reviewText {
+  font-size: 0.98rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0;
+  background-color: rgba(255,255,255,0.6);
+  padding: 1rem;
+  border-radius: 8px;
+  height: 4.5em;
+  border: 1px solid rgba(44, 62, 80, 0.2);
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.04);
+  overflow: hidden;
+  position: relative;
+  white-space: pre-line;
+}
+
+.reviewText > span {
+  display: block;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  transition: transform 5s ease-in-out;
+  transform: translateY(0);
+}
+
+.bookCard:hover .reviewText > span {
+  transform: translateY(calc(-100% + 4.5em - 2rem));
+}
+
+.error {
+  color: #ef4444;
+  padding: 1.5rem;
+  background: #fef2f2;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem;
+  color: #6b7280;
+  background: white;
+  border-radius: 12px;
+  margin-top: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.fab {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  z-index: 10;
+  background: linear-gradient(90deg, #2c3e50, #95a5a6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  box-shadow: 0 8px 24px rgba(44, 62, 80, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.fab:hover {
+  box-shadow: 0 16px 32px rgba(44, 62, 80, 0.28);
+  transform: scale(1.08);
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .title {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+  .fab {
+    width: 52px;
+    height: 52px;
+    font-size: 1.5rem;
+    bottom: 1.2rem;
+    right: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+} 

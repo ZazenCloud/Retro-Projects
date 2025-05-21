@@ -68,6 +68,11 @@ export default function Home() {
       description: 'A note-taking app with cyberpunk vibes',
       path: '/prototypes/note-os'
     },
+    {
+      title: 'My Bookshelf',
+      description: 'A reading tracker powered by Notion database to display your book collection',
+      path: '/prototypes/my-bookshelf'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',
@@ -141,7 +146,7 @@ export default function Home() {
             <span onClick={handleMinimizeWindow}></span>
             <span onClick={handleMaximizeWindow}></span>
           </div>
-          <span className={styles.minimizedText}>Zen's Projects</span>
+          <span className={styles.minimizedText}>Retro Projects</span>
         </div>
       ) : (
         <>
@@ -157,7 +162,7 @@ export default function Home() {
                 <span onClick={handleMinimizeWindow}></span>
                 <span onClick={handleMaximizeWindow}></span>
               </div>
-              <h1 className={pixelFont.className}>Zen's Projects</h1>
+              <h1 className={pixelFont.className}>Projects</h1>
             </header>
 
             <main>

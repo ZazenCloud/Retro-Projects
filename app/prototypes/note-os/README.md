@@ -14,7 +14,6 @@ NoteOS reimagines digital note-taking through the lens of classic operating syst
 ### 2. Text Notes
 - **Rich Text Editing**: Format text with bold, italic, underline, headings, and lists
 - **Auto-save**: All changes are automatically saved
-- **Smart Titles**: Window titles automatically update based on the first line of content
 - **Copy/Paste**: Full support for copying and pasting content
 
 ### 3. Drawing Canvas
@@ -23,11 +22,18 @@ NoteOS reimagines digital note-taking through the lens of classic operating syst
 - **Export**: Export your drawings as PNG files
 - **Auto-save**: Drawings are automatically saved with the note
 
+### 4. Audio Recording
+- **Voice Recording**: Record audio directly within the application
+- **Playback Controls**: Play, pause, and seek through recordings
+- **Delete Recordings**: Remove unwanted audio recordings
+- **Auto-save**: Audio recordings are automatically saved with the note
+
 ## Technology Stack
 - **Next.js**: React framework for the frontend
 - **TypeScript**: For type-safe components and logic
 - **CSS Modules**: For component-scoped styling
 - **HTML5 Canvas API**: For the drawing functionality
+- **Web Audio API**: For audio recording and playback
 
 ## How to Use
 
@@ -42,21 +48,15 @@ NoteOS reimagines digital note-taking through the lens of classic operating syst
    - Use the undo/redo buttons to correct mistakes
    - Click "Export" to save your drawing as a PNG file
 
-3. **Window Management**:
+3. **Record Audio**:
+   - Click "New Audio" in the navbar to create an audio recorder
+   - Click "Record" to start recording
+   - Click "Stop" to end the recording
+   - Use the audio player controls to play back your recording
+   - Click the red trash button to delete the recording
+
+4. **Window Management**:
    - Drag windows by their headers to reposition them
    - Resize windows using the handle in the bottom-right corner
    - Click on a window to bring it to the front
-   - Click the yellow button to minimize a window
-   - Click the red button to close a window
-
-## Development
-
-This prototype is built using React and Next.js with TypeScript. The main components are:
-
-- `page.tsx`: Main component that manages the windows state
-- `components/Window.tsx`: Draggable and resizable window component
-- `components/TextEditor.tsx`: Rich text editor component
-- `components/DrawingCanvas.tsx`: Drawing canvas with undo/redo functionality
-- `components/Navbar.tsx`: Top navbar with actions to create new notes/drawings
-
-All styling is done with CSS modules in `styles.module.css`. 
+   - Click the X button to close a window

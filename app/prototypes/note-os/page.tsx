@@ -62,7 +62,7 @@ export default function NoteOS() {
     
     const newWindow = {
       id: `text-${Date.now()}`,
-      title: 'Note',
+      title: 'Text Note',
       type: 'text' as 'text' | 'drawing' | 'audio',
       content: '',
       position: { x: 50 + (windows.length * 20) % 200, y: 50 + (windows.length * 20) % 200 },
