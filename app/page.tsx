@@ -44,11 +44,6 @@ export default function Home() {
   // Add your prototypes to this array
   const prototypes = [
     {
-      title: 'Getting started',
-      description: 'How to create a prototype',
-      path: '/prototypes/example'
-    },
-    {
       title: 'Confetti button',
       description: 'An interactive button that creates a colorful confetti explosion',
       path: '/prototypes/confetti-button'

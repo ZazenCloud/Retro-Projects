@@ -8,6 +8,7 @@
 // 4. Rename and customize the component and styles as needed
 
 import { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 import styles from './styles.module.css';
 
 // Typography effects array
@@ -119,6 +120,8 @@ export default function TypographyExperiments() {
 
   return (
     <div className={styles.container}>
+      <Link href="/" className={styles.backButton}>←</Link>
+      
       <div 
         ref={canvasRef}
         className={styles.canvas}

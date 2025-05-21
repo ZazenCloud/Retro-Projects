@@ -56,8 +56,9 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
   position: relative;
+  animation: fadeIn 0.8s ease-in-out 0.1s both;
 }
 
 .title {
@@ -99,14 +100,30 @@
   font-weight: 600;
 }
 
+.booksHeader {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin: 1.5rem 0 0.5rem;
+}
+
 .bookCount {
   font-size: 1.25rem;
   font-weight: 500;
   color: #666;
-  background: white;
+  background: rgba(255, 255, 255, 0.5);
   padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.8s ease-in-out 0.2s both;
+  display: inline-block;
+  align-self: flex-start;
+  backdrop-filter: blur(5px);
+}
+
+.genreBold {
+  font-weight: 700;
+  color: #2c3e50;
 }
 
 .grid {
@@ -115,6 +132,7 @@
   gap: 2.5rem;
   position: relative;
   z-index: 1;
+  animation: fadeIn 0.8s ease-in-out 0.4s both;
 }
 
 .bookCard {
@@ -131,7 +149,9 @@
   border: 1.5px solid rgba(255,255,255,0.25);
   transition: transform 0.2s, box-shadow 0.2s, border 0.2s;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  animation: fadeIn 0.8s ease-in-out both;
+  animation-delay: calc(0.4s + (var(--card-index, 0) * 0.05s));
 }
 
 .bookCard:hover {
@@ -195,7 +215,7 @@
   color: #1a1a1a;
   line-height: 1.3;
   margin: 0;
-  min-height: 3.2em;
+  min-height: 2.6em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -274,11 +294,27 @@
 }
 
 .loading {
-  text-align: center;
-  padding: 4rem;
-  color: #6b7280;
-  font-size: 1.1rem;
-  font-weight: 500;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2c3e50;
+  font-size: 1.4rem;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.loadingText {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 1.5rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .emptyState {
@@ -298,6 +334,7 @@
   margin-bottom: 2rem;
   position: relative;
   z-index: 1;
+  animation: fadeIn 0.8s ease-in-out 0.3s both;
 }
 
 .genreButton {
@@ -338,6 +375,7 @@
   height: calc(100vh - 14rem);
   overflow: hidden;
   margin: 0;
+  animation: fadeIn 0.8s ease-in-out 0.2s both;
 }
 
 .trendsTitle {
@@ -346,6 +384,7 @@
   color: #1a1a1a;
   margin: 0;
   flex-shrink: 0;
+  animation: fadeIn 0.8s ease-in-out 0.3s both;
 }
 
 .chartContainer {
@@ -359,6 +398,7 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  animation: fadeIn 0.8s ease-in-out both;
 }
 
 .chartTitle {
@@ -369,9 +409,12 @@
   flex-shrink: 0;
 }
 
-/* Add these new classes */
 .pieChartContainer {
-  /* Specific styles for pie chart container if needed */
+  animation-delay: 0.4s;
+}
+
+.barChartContainer {
+  animation-delay: 0.6s;
 }
 
 .barChartContainer .chartTitle {
@@ -407,11 +450,18 @@
   font-size: 0.95rem;
 }
 
-.fab {
+.fabContainer {
   position: fixed;
   bottom: 2.5rem;
   right: 2.5rem;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fab {
+  position: relative;
   background: linear-gradient(90deg, #2c3e50, #95a5a6);
   color: white;
   border: none;
@@ -425,10 +475,113 @@
   font-size: 2.2rem;
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.2s;
+  z-index: 11;
 }
+
 .fab:hover {
   box-shadow: 0 16px 32px rgba(44, 62, 80, 0.28);
   transform: scale(1.08);
+}
+
+/* Modified delete button styles to only respond to fab hover or active state */
+.deleteButton {
+  position: relative;
+  bottom: 0;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, #2c3e50, #95a5a6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  box-shadow: 0 8px 24px rgba(44, 62, 80, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in 0.7s;
+  opacity: 0;
+  transform: translateY(0) scale(1);
+  pointer-events: none;
+}
+
+/* Delete button hover effects */
+.deleteButton:hover {
+  transform: scale(1.08);
+  box-shadow: 0 16px 32px rgba(44, 62, 80, 0.28);
+  opacity: 1;
+  transition-delay: 0s;
+  transition-timing-function: ease-out;
+}
+
+/* Make delete button visible when fab container is hovered */
+.fabContainer:hover .deleteButton {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0s;
+  transition-timing-function: ease-out;
+}
+
+/* When user leaves the fabContainer, the delay should start */
+.fabContainer .deleteButton {
+  transition: opacity 0.2s ease-in 0.7s;
+  pointer-events: auto; /* Keep clickable during transition */
+}
+
+/* Active state styles */
+.deleteButton.active {
+  background: linear-gradient(90deg, #2c3e50, #95a5a6);
+}
+
+/* Keep the delete button fully interactive when in active state */
+.deleteButton.active {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+  pointer-events: auto !important;
+  background: linear-gradient(90deg, #2c3e50, #95a5a6);
+  transition-delay: 0s !important;
+}
+
+/* Delete mode and card trembling */
+.tremblingCard {
+  animation: tremble 0.3s infinite;
+}
+
+@keyframes tremble {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(0.5deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-0.5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.deleteX {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  background: #000;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 20;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.2s;
+  pointer-events: auto;
+}
+
+.tremblingCard .deleteX {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Media queries for responsiveness */
@@ -550,5 +703,291 @@
 
   .trendsTitle {
     font-size: 1.4rem;
+  }
+}
+
+/* Add book modal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: modalAppear 0.3s ease-out forwards;
+}
+
+@keyframes modalAppear {
+  from { 
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modalCloseButton:hover {
+  color: #1a1a1a;
+}
+
+.modalTitle {
+  font-size: 1.8rem;
+  color: #1a1a1a;
+  margin: 0 0 2rem 0;
+  font-weight: 700;
+}
+
+.bookForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.2);
+}
+
+.additionalInput {
+  margin-top: 0.5rem;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancelButton,
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+.cancelButton:hover {
+  background: #e5e7eb;
+}
+
+.submitButton {
+  background: linear-gradient(90deg, #2c3e50, #4b6cb7);
+  color: white;
+  border: none;
+}
+
+.submitButton:hover {
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.25);
+  transform: translateY(-2px);
+}
+
+.submitButton:disabled,
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.submitMessage {
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* Media queries */
+@media (max-width: 650px) {
+  .modal {
+    padding: 1.5rem;
+    width: 95%;
+  }
+  
+  .modalTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .formGroup input,
+  .formGroup select,
+  .formGroup textarea {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  
+  .formActions {
+    flex-direction: column;
+  }
+  
+  .cancelButton,
+  .submitButton {
+    width: 100%;
+  }
+}
+
+/* Add delete animation */
+@keyframes deleteAnimation {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+    filter: blur(0);
+  }
+  30% {
+    opacity: 0.8;
+    transform: scale(0.95) rotate(2deg);
+    filter: blur(2px);
+  }
+  80% {
+    opacity: 0.2;
+    transform: scale(0.5) rotate(-3deg) translateY(10px);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2) translateY(30px);
+    filter: blur(12px);
+  }
+}
+
+.deletingCard {
+  animation: deleteAnimation 0.6s ease-in forwards;
+  pointer-events: none;
+}
+
+.backButton {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 0 0 8px 0;
+  text-decoration: none;
+  color: #2c3e50;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(5px);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.backButton span {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.backButton:active {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Add media queries for responsive design */
+@media (max-width: 650px) {
+  .backButton {
+    padding: 0.6rem 1rem;
+  }
+  
+  .backButton span {
+    font-size: 1.4rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 } 
