@@ -5,4 +5,20 @@ html, body {
   padding: 0;
   background: none;
   overflow-x: hidden;
-} 
+}
+
+/* Remove the global scroll restrictions */
+/* body {
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+} */ 
