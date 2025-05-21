@@ -538,6 +538,7 @@ export default function DigitalPiano() {
   const [selectedSong, setSelectedSong] = useState<string>(AVAILABLE_SONGS_DATA[0]?.name || '');
   const [isSongCurrentlyPlaying, setIsSongCurrentlyPlaying] = useState(false);
   const [octaveOffset, setOctaveOffset] = useState<number>(0);
+  const [isAudioContextInitialized, setIsAudioContextInitialized] = useState(false);
   const isMobile = useIsMobile();
   
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -547,7 +548,7 @@ export default function DigitalPiano() {
   const keysPressedRef = useRef<Map<string, number>>(new Map());
   const animationFrameRef = useRef<number | undefined>(undefined);
   const songPlaybackTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
-  const waveformRef = useRef(waveform); // Ref to hold the current waveform
+  const waveformRef = useRef(waveform);
   const playNextSongNoteRef = useRef<((songNotes: SongNote[], noteIndex: number, gap: number) => void) | null>(null);
 
   // Define waveformOptions here
@@ -557,32 +558,6 @@ export default function DigitalPiano() {
     { label: "sawtooth", value: "sawtooth" },
     { label: "triangle", value: "triangle" },
   ];
-
-  const { position: pianoPosition, onMouseDownDraggable: onPianoMouseDown, elementRef: pianoRef, isDragging: isPianoDragging } = useDraggable({ x: 614, y: 200 }); // Adjusted initial Y to 30px
-  
-  // Apply the grey background to the whole page
-  usePageBackground('#eee');
-
-  useEffect(() => {
-    waveformRef.current = waveform;
-  }, [waveform]);
-
-  useEffect(() => {
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      analyserRef.current.fftSize = 2048; // Kept original fftSize for detail
-      // smoothingTimeConstant can be kept low or at default for less visual smoothing of the data itself
-      analyserRef.current.smoothingTimeConstant = 0.1; 
-      analyserRef.current.connect(audioContextRef.current.destination);
-    }
-    return () => {
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-        stopAllSounds(); 
-        audioContextRef.current.close();
-      }
-    };
-  }, []);
 
   const stopAllSounds = useCallback(() => {
     const audioContext = audioContextRef.current;
@@ -607,10 +582,60 @@ export default function DigitalPiano() {
     }
   }, [setActiveKeys]);
 
-  const playNote = useCallback((baseNoteWithOctave: string) => {
-    if (!audioContextRef.current || audioContextRef.current.state === 'suspended') {
-        audioContextRef.current?.resume();
+  const { position: pianoPosition, onMouseDownDraggable: onPianoMouseDown, elementRef: pianoRef, isDragging: isPianoDragging } = useDraggable({ x: 614, y: 200 }); // Adjusted initial Y to 30px
+  
+  // Apply the grey background to the whole page
+  usePageBackground('#eee');
+
+  useEffect(() => {
+    waveformRef.current = waveform;
+  }, [waveform]);
+
+  // Add initialization function
+  const initializeAudioContext = useCallback(async () => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      analyserRef.current.fftSize = 2048;
+      analyserRef.current.smoothingTimeConstant = 0.1;
+      analyserRef.current.connect(audioContextRef.current.destination);
     }
+    
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume();
+    }
+    
+    setIsAudioContextInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    // Add click handler to the document
+    const handleFirstInteraction = () => {
+      initializeAudioContext();
+      // Remove the event listener after first interaction
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('keydown', handleFirstInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        stopAllSounds();
+        audioContextRef.current.close();
+      }
+    };
+  }, [initializeAudioContext, stopAllSounds]);
+
+  // Modify playNote to properly handle initialization
+  const playNote = useCallback(async (baseNoteWithOctave: string) => {
+    if (!audioContextRef.current || !isAudioContextInitialized) {
+      await initializeAudioContext();
+    }
+
     if (!audioContextRef.current || !analyserRef.current) return;
 
     const audioContext = audioContextRef.current;
@@ -662,7 +687,7 @@ export default function DigitalPiano() {
         }
     };
     oscillatorsRef.current.set(uniqueKeyForOscillator, { oscillator, gain: gainNode });
-  }, [setActiveKeys, octaveOffset]);
+  }, [setActiveKeys, octaveOffset, isAudioContextInitialized, initializeAudioContext]);
 
   const stopNote = useCallback((baseNoteWithOctave: string, fixedOctaveOffset?: number) => {
     const offsetToUse = typeof fixedOctaveOffset === 'number' ? fixedOctaveOffset : octaveOffset;
@@ -704,7 +729,7 @@ export default function DigitalPiano() {
     }
   }, [setActiveKeys, octaveOffset]);
 
-  const playNextSongNote = useCallback((songNotes: SongNote[], noteIndex: number, gap: number) => {
+  const playNextSongNote = useCallback(async (songNotes: SongNote[], noteIndex: number, gap: number) => {
     if (noteIndex >= songNotes.length) {
       setIsSongCurrentlyPlaying(false); // Song finished
       return;
@@ -713,7 +738,7 @@ export default function DigitalPiano() {
     const note = songNotes[noteIndex];
     const octaveOffsetForThisNoteInstance = octaveOffset; // Capture current octaveOffset for this specific note instance
 
-    playNote(note.pitch); // playNote will use the octaveOffset from its closure (which matches the one captured above)
+    await playNote(note.pitch); // Wait for playNote to complete
 
     const noteStopTimeout = setTimeout(() => {
       stopNote(note.pitch, octaveOffsetForThisNoteInstance); // Pass the captured offset to stopNote
@@ -766,8 +791,9 @@ export default function DigitalPiano() {
     setOctaveOffset(prev => Math.min(MAX_OCTAVE_OFFSET, prev + 1));
   }, []);
 
+  // Update the event handlers to handle async playNote
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         stopAllSounds();
         setActiveKeys([]);
@@ -829,7 +855,7 @@ export default function DigitalPiano() {
 
       if (targetNote && !keysPressedRef.current.has(e.key.toLowerCase())) {
         keysPressedRef.current.set(e.key.toLowerCase(), octaveOffset);
-        playNote(targetNote);
+        await playNote(targetNote);
       }
     };
 
@@ -856,7 +882,8 @@ export default function DigitalPiano() {
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('blur', handleBlur);
     };
-  }, [playNote, stopNote, stopAllSounds, waveform, waveformOptions]);
+  }, [playNote, stopNote, stopAllSounds, waveform, waveformOptions, selectedSong, 
+      isSongCurrentlyPlaying, handleStopSong, handlePlaySong, increaseOctave, decreaseOctave]);
 
   return (
     <div className={styles.container}>
@@ -922,17 +949,16 @@ export default function DigitalPiano() {
                 {/* First render all white keys to establish the base layout */}
                 {NOTES.filter(note => !note.includes('#')).map(noteName => {
                   const fullNote = `${noteName}${octave}`;
-                  // Logic for 17-note layout: only C,D,E for octave 4 from keyboard letters
                   if (octave === 4 && !['C', 'D', 'E', 'C#', 'D#'].includes(noteName)) {
-                     if (KEY_PRESS_TO_NOTE[';'] === fullNote || 
-                         KEY_PRESS_TO_NOTE['p'] === fullNote || 
-                         KEY_PRESS_TO_NOTE['l'] === fullNote || 
-                         KEY_PRESS_TO_NOTE['o'] === fullNote || 
-                         KEY_PRESS_TO_NOTE['k'] === fullNote ) {
-                       // Keep C4,D4,E4 and their sharps based on KEY_PRESS_TO_NOTE
-                     } else {
-                        if (!noteName.includes('#')) return null; // Hide other white keys in octave 4 not in mapping
-                     }
+                    if (KEY_PRESS_TO_NOTE[';'] === fullNote || 
+                        KEY_PRESS_TO_NOTE['p'] === fullNote || 
+                        KEY_PRESS_TO_NOTE['l'] === fullNote || 
+                        KEY_PRESS_TO_NOTE['o'] === fullNote || 
+                        KEY_PRESS_TO_NOTE['k'] === fullNote ) {
+                      // Keep C4,D4,E4 and their sharps based on KEY_PRESS_TO_NOTE
+                    } else {
+                      if (!noteName.includes('#')) return null; // Hide other white keys in octave 4 not in mapping
+                    }
                   }
                   const isActive = activeKeys.includes(fullNote);
                   const keyboardKeyLabel = NOTE_TO_KEY_LABEL[fullNote] || '';
@@ -941,15 +967,24 @@ export default function DigitalPiano() {
                     <div
                       key={fullNote}
                       className={`${styles.whiteKey} ${isActive ? styles.active : ''}`}
-                      onMouseDown={() => playNote(fullNote)}
+                      onMouseDown={async (e) => {
+                        e.preventDefault();
+                        await playNote(fullNote);
+                      }}
                       onMouseUp={() => stopNote(fullNote)}
                       onMouseLeave={() => {
                         if (oscillatorsRef.current.has(`${fullNote}-${octaveOffset}`) && activeKeys.includes(fullNote)) {
-                           stopNote(fullNote);
+                          stopNote(fullNote);
                         }
                       }}
-                      onTouchStart={(e) => { e.preventDefault(); playNote(fullNote); }}
-                      onTouchEnd={(e) => { e.preventDefault(); stopNote(fullNote); }}
+                      onTouchStart={async (e) => { 
+                        e.preventDefault(); 
+                        await playNote(fullNote); 
+                      }}
+                      onTouchEnd={(e) => { 
+                        e.preventDefault(); 
+                        stopNote(fullNote); 
+                      }}
                       data-note={fullNote}
                     >
                       <span className={styles.noteLabel}>
@@ -963,8 +998,7 @@ export default function DigitalPiano() {
                 {/* Then render all black keys on top */}
                 {NOTES.filter(note => note.includes('#')).map(noteName => {
                   const fullNote = `${noteName}${octave}`;
-                   // Logic for 17-note layout: only C#, D# for octave 4 from keyboard letters
-                   if (octave === 4 && !['C', 'D', 'E', 'C#', 'D#'].includes(noteName)) {
+                  if (octave === 4 && !['C', 'D', 'E', 'C#', 'D#'].includes(noteName)) {
                     if (KEY_PRESS_TO_NOTE[';'] === fullNote || 
                         KEY_PRESS_TO_NOTE['p'] === fullNote || 
                         KEY_PRESS_TO_NOTE['l'] === fullNote || 
@@ -972,9 +1006,9 @@ export default function DigitalPiano() {
                         KEY_PRESS_TO_NOTE['k'] === fullNote ) {
                       // Keep C4,D4,E4 and their sharps based on KEY_PRESS_TO_NOTE
                     } else {
-                       if (noteName.includes('#')) return null; // Hide other black keys in octave 4 not in mapping
+                      if (noteName.includes('#')) return null; // Hide other black keys in octave 4 not in mapping
                     }
-                 }
+                  }
                   const isActive = activeKeys.includes(fullNote);
                   const keyboardKeyLabel = NOTE_TO_KEY_LABEL[fullNote] || '';
                   
@@ -982,15 +1016,24 @@ export default function DigitalPiano() {
                     <div
                       key={fullNote}
                       className={`${styles.blackKey} ${isActive ? styles.active : ''}`}
-                      onMouseDown={() => playNote(fullNote)}
+                      onMouseDown={async (e) => {
+                        e.preventDefault();
+                        await playNote(fullNote);
+                      }}
                       onMouseUp={() => stopNote(fullNote)}
                       onMouseLeave={() => {
                         if (oscillatorsRef.current.has(`${fullNote}-${octaveOffset}`) && activeKeys.includes(fullNote)) {
-                           stopNote(fullNote);
+                          stopNote(fullNote);
                         }
                       }}
-                      onTouchStart={(e) => { e.preventDefault(); playNote(fullNote); }}
-                      onTouchEnd={(e) => { e.preventDefault(); stopNote(fullNote); }}
+                      onTouchStart={async (e) => { 
+                        e.preventDefault(); 
+                        await playNote(fullNote); 
+                      }}
+                      onTouchEnd={(e) => { 
+                        e.preventDefault(); 
+                        stopNote(fullNote); 
+                      }}
                       data-note={fullNote}
                     >
                       {keyboardKeyLabel && (
