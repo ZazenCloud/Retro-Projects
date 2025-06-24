@@ -68,6 +68,11 @@ export default function Home() {
       description: 'A reading tracker powered by Notion database to display your book collection',
       path: '/prototypes/my-bookshelf'
     },
+    {
+      title: 'Retro Snake',
+      description: 'A classic snake game with retro aesthetics and glitch effects',
+      path: '/prototypes/retro-snake'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',
